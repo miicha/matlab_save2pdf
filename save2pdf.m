@@ -77,11 +77,11 @@ function [ ] = save2pdf( filename, varargin )
     % Font options:
     if texify
         o = {'interpreter', 'latex', 'FontSize', fontsize};
-        ticko = {'TickLabelInterpreter', 'latex', 'FontSize', fontsize};
+        ticko = {'TickLabelInterpreter', 'latex', 'FontSize', fontsize-2};
         legendo = {'interpreter', 'latex', 'FontSize', fontsize-2};
     else
         o = {'FontSize', fontsize};
-        ticko = {'FontSize', fontsize};
+        ticko = {'FontSize', fontsize-2};
         legendo = {'FontSize', fontsize-2};
     end
     
