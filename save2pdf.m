@@ -78,9 +78,11 @@ function [ ] = save2pdf( filename, varargin )
     if texify
         o = {'interpreter', 'latex', 'FontSize', fontsize};
         ticko = {'TickLabelInterpreter', 'latex', 'FontSize', fontsize};
+        legendo = {'interpreter', 'latex', 'FontSize', fontsize-2};
     else
         o = {'FontSize', fontsize};
         ticko = {'FontSize', fontsize};
+        legendo = {'FontSize', fontsize-2};
     end
     
     children = fig.Children;
@@ -92,8 +94,10 @@ function [ ] = save2pdf( filename, varargin )
 
             set(children(i), ticko{:});
         end
+        if isa(children(i), 'matlab.graphics.illustration.Legend')
+            set(children(i), legendo{:})
+        end            
     end
-    set(findobj(gcf,'Type','axes','Tag','legend'), o{:});   
 
 	if strcmp(pathstr, '')
 		print(fig, '-dpdf', '-r600', [name '.pdf'])
