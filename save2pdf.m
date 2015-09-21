@@ -39,7 +39,7 @@ function [ ] = save2pdf( filename, varargin )
     escape = true;
     texify = true;
     fig = gcf;
-    aspectratio = 3/5; % height/width
+    aspectratio = 5/3; % width/height
     figwidth = 0.8; % *textwidth
     fontsize = 11; % pt
     textwidth = 17; % cm
@@ -71,8 +71,8 @@ function [ ] = save2pdf( filename, varargin )
     end
     
     set(fig, 'PaperUnits', 'centimeters');
-    set(fig, 'PaperSize', [textwidth, textwidth*aspectratio].*figwidth);
-    set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth*aspectratio].*figwidth]);
+    set(fig, 'PaperSize', [textwidth, textwidth/aspectratio].*figwidth);
+    set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth/aspectratio].*figwidth]);
     
     % Font options:
     if texify
