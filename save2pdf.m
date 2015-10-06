@@ -15,8 +15,9 @@ function [ ] = save2pdf( filename, varargin )
     %   texify      - Texify the labels and legends. Default: true.
     %   escape      - escapes ' ' and '~', which cannot be parsed by LaTeX.
     %                 Default: true.
-    %   fontsize    - Font size in pt. Defaults to 11.
+    %   fontsize    - Font size in pt. Default: 11.
     %   textwidth   - Textwidth of your LaTeX page in cm. Default: 17.
+    %   format      - Must be supported by `print`. Default: 'pdf'.
     %
     % Example:   plot(1:10);
     %            xlabel('bla');
@@ -43,7 +44,8 @@ function [ ] = save2pdf( filename, varargin )
     figwidth = 0.8; % *textwidth
     fontsize = 11; % pt
     textwidth = 17; % cm
-
+    makepdf = 'pdf';
+    
     % user-supplied options:
     for i = 1:2:length(varargin)
         switch lower(varargin{i}(1:4))
@@ -61,6 +63,8 @@ function [ ] = save2pdf( filename, varargin )
                 fontsize = varargin{i+1};
             case 'text'
                 textwidth = varargin{i+1};
+            case 'form'
+                format = varargin{i+1};
         end
     end
    
@@ -98,10 +102,6 @@ function [ ] = save2pdf( filename, varargin )
             set(children(i), legendo{:})
         end            
     end
-
-	if strcmp(pathstr, '')
-		print(fig, '-dpdf', '-r600', [name '.pdf'])
-	else
-		print(fig, '-dpdf', '-r600', [pathstr '/' name '.pdf'])
-	end
+    
+    print(fig, ['-d' format], '-r600', fullfile(pathstr, name))
 end
