@@ -44,7 +44,7 @@ function [ ] = save2pdf( filename, varargin )
     figwidth = 0.8; % *textwidth
     fontsize = 11; % pt
     textwidth = 17; % cm
-    makepdf = 'pdf';
+    format = 'pdf';
     
     % user-supplied options:
     for i = 1:2:length(varargin)
@@ -78,6 +78,12 @@ function [ ] = save2pdf( filename, varargin )
     set(fig, 'PaperSize', [textwidth, textwidth/aspectratio].*figwidth);
     set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth/aspectratio].*figwidth]);
     
+    old_units = fig.Units;
+    old_pos = fig.Position;
+    
+    fig.Units = 'centimeters';
+    fig.Position = [fig.Position(1:2) textwidth, textwidth/aspectratio].*figwidth;
+    
     % Font options:
     if texify
         o = {'interpreter', 'latex', 'FontSize', fontsize};
@@ -97,6 +103,16 @@ function [ ] = save2pdf( filename, varargin )
             set(get(children(i), 'ZLabel'), o{:});
 
             set(children(i), ticko{:});
+            op = get(children(i), 'outerPosition');
+            old_op(i, :) = op;
+            ax(i) = children(i);
+            if op(2) < 0
+                op(2) = 0.01;
+            end
+            if op(4) > 1
+                op(4) = 1;
+            end
+            set(children(i), 'outerPosition', op);
         end
         if isa(children(i), 'matlab.graphics.illustration.Legend')
             set(children(i), legendo{:})
@@ -104,4 +120,9 @@ function [ ] = save2pdf( filename, varargin )
     end
     
     print(fig, ['-d' format], '-r600', fullfile(pathstr, name))
+    fig.Units = old_units;
+    fig.Position = old_pos;
+    for i = 1:length(ax)
+        ax(i).OuterPosition = old_op(i, :);
+    end
 end
