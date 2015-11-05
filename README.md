@@ -13,7 +13,7 @@ einfach in der richtigen Größe zum Einbinden in TeX-Dokumente erstellen lassen
     
     `filename`      - Path (absolute or relative to the current working dir).
     
-    `varargin`:
+    `options`:
      - `width`       - Adjusts font sizes so that they are readable with
                     different figure widths for a4paper. Default: `0.8*\textwidth`.
      - `aspectratio` - Aspect ratio. Defaults to `height/width = 3/5`.
@@ -22,7 +22,9 @@ einfach in der richtigen Größe zum Einbinden in TeX-Dokumente erstellen lassen
      - `escape`      - escapes ` ` and `~`, which cannot be parsed by LaTeX.
                     Default: `true`.
      - `fontsize`    - Font size in pt. Defaults to `11`.
+	 - `tick_fontsize` - Font size in pt. Default: 9.
      - `textwidth`   - Textwidth of your LaTeX page in cm. Default: `17`.
+	 - `format`      - Must be supported by `print`. Default: `pdf`.
     
     Example:   
     ```
