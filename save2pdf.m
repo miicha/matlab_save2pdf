@@ -71,7 +71,16 @@ function [ ] = save2pdf( filename, varargin )
                 tick_fontsize = varargin{i+1};
         end
     end
-   
+    
+    % copy figure before making any changes
+    n_fig = figure('visible', 'off');
+    % find all children of fig that are not menus and toolbars and stuff
+    cs = allchild(fig);
+    cs = cs(11:end);
+    
+    copyobj(cs, n_fig);
+    fig = n_fig;
+    
     [pathstr, name] = fileparts(filename);
     if escape
         name = regexprep(name, ' ', '_');
@@ -81,10 +90,7 @@ function [ ] = save2pdf( filename, varargin )
     set(fig, 'PaperUnits', 'centimeters');
     set(fig, 'PaperSize', [textwidth, textwidth/aspectratio].*figwidth);
     set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth/aspectratio].*figwidth]);
-    
-    old_units = fig.Units;
-    old_pos = fig.Position;
-    
+
     fig.Units = 'centimeters';
     fig.Position = [fig.Position(1:2) textwidth, textwidth/aspectratio].*figwidth;
     
@@ -108,7 +114,6 @@ function [ ] = save2pdf( filename, varargin )
 
             set(children(i), ticko{:});
             op = get(children(i), 'outerPosition');
-            old_op(i, :) = op;
             if op(2) < 0
                 ax(i) = children(i);
                 op(2) = 0.01;
@@ -128,12 +133,9 @@ function [ ] = save2pdf( filename, varargin )
         end
     end
     
+    % save the file
     print(fig, ['-d' format], '-r600', fullfile(pathstr, name))
-    fig.Units = old_units;
-    fig.Position = old_pos;
-    if exist('ax', 'var')
-        for i = 1:length(ax)
-            ax(i).OuterPosition = old_op(i, :);
-        end
-    end
+    
+    % clean up
+    fig.delete();
 end
