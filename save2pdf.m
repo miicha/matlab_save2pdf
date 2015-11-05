@@ -16,6 +16,7 @@ function [ ] = save2pdf( filename, varargin )
     %   escape      - escapes ' ' and '~', which cannot be parsed by LaTeX.
     %                 Default: true.
     %   fontsize    - Font size in pt. Default: 11.
+    %   tick_fontsize - Font size in pt. Default: 9.
     %   textwidth   - Textwidth of your LaTeX page in cm. Default: 17.
     %   format      - Must be supported by `print`. Default: 'pdf'.
     %
@@ -43,6 +44,7 @@ function [ ] = save2pdf( filename, varargin )
     aspectratio = 5/3; % width/height
     figwidth = 0.8; % *textwidth
     fontsize = 11; % pt
+    tick_fontsize = fontsize-2; % pt
     textwidth = 17; % cm
     format = 'pdf';
     
@@ -65,6 +67,8 @@ function [ ] = save2pdf( filename, varargin )
                 textwidth = varargin{i+1};
             case 'form'
                 format = varargin{i+1};
+            case 'tick'
+                tick_fontsize = varargin{i+1};
         end
     end
    
@@ -87,17 +91,17 @@ function [ ] = save2pdf( filename, varargin )
     % Font options:
     if texify
         o = {'interpreter', 'latex', 'FontSize', fontsize};
-        ticko = {'TickLabelInterpreter', 'latex', 'FontSize', fontsize-2};
-        legendo = {'interpreter', 'latex', 'FontSize', fontsize-2};
+        ticko = {'TickLabelInterpreter', 'latex', 'FontSize', tick_fontsize};
+        legendo = {'interpreter', 'latex', 'FontSize', tick_fontsize};
     else
         o = {'FontSize', fontsize};
-        ticko = {'FontSize', fontsize-2};
-        legendo = {'FontSize', fontsize-2};
+        ticko = {'FontSize', tick_fontsize};
+        legendo = {'FontSize', tick_fontsize};
     end
     
     children = fig.Children;
     for i = 1:length(children)
-        if isa(children(i), 'matlab.graphics.axis.Axes')
+        if isa(children(i), 'matlab.graphics.axis.Axes')           
             set(get(children(i), 'XLabel'), o{:});
             set(get(children(i), 'YLabel'), o{:});
             set(get(children(i), 'ZLabel'), o{:});
@@ -105,11 +109,12 @@ function [ ] = save2pdf( filename, varargin )
             set(children(i), ticko{:});
             op = get(children(i), 'outerPosition');
             old_op(i, :) = op;
-            ax(i) = children(i);
             if op(2) < 0
+                ax(i) = children(i);
                 op(2) = 0.01;
             end
             if op(4) > 1
+                ax(i) = children(i);
                 op(4) = 1;
             end
             set(children(i), 'outerPosition', op);
@@ -117,12 +122,18 @@ function [ ] = save2pdf( filename, varargin )
         if isa(children(i), 'matlab.graphics.illustration.Legend')
             set(children(i), legendo{:})
         end            
+        if isa(children(i), 'matlab.graphics.illustration.ColorBar')
+            set(children(i), 'TickLabelInterpreter', 'latex')
+            set(children(i), 'FontSize', tick_fontsize)
+        end
     end
     
     print(fig, ['-d' format], '-r600', fullfile(pathstr, name))
     fig.Units = old_units;
     fig.Position = old_pos;
-    for i = 1:length(ax)
-        ax(i).OuterPosition = old_op(i, :);
+    if exist('ax', 'var')
+        for i = 1:length(ax)
+            ax(i).OuterPosition = old_op(i, :);
+        end
     end
 end
