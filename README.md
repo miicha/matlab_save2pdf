@@ -16,7 +16,7 @@ einfach in der richtigen Größe zum Einbinden in TeX-Dokumente erstellen lassen
     `options`:
      - `width`       - Adjusts font sizes so that they are readable with
                     different figure widths for a4paper. Default: `0.8*\textwidth`.
-     - `aspectratio` - Aspect ratio. Defaults to `width/height = 3/5`.
+     - `aspectratio` - Aspect ratio. Defaults to `width/height = 5/3`.
      - `figure`      - Figure to save. Default: `gcf`.
      - `texify`      - Texify the labels and legends. Default: `true`.
      - `escape`      - escapes ` ` and `~`, which cannot be parsed by LaTeX.
