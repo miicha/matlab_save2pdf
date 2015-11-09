@@ -76,7 +76,7 @@ function [ ] = save2pdf( filename, varargin )
     n_fig = figure('visible', 'off');
     % find all children of fig that are not menus and toolbars and stuff
     cs = allchild(fig);
-    cs = cs(11:end);
+    cs = cs(10:end);
     
     copyobj(cs, n_fig);
     fig = n_fig;
