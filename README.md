@@ -22,7 +22,7 @@ einfach in der richtigen Größe zum Einbinden in TeX-Dokumente erstellen lassen
      - `escape`      - escapes ` ` and `~`, which cannot be parsed by LaTeX.
                     Default: `true`.
      - `fontsize`    - Font size in pt. Defaults to `11`.
-	 - `tick_fontsize` - Font size in pt. Default: 9.
+	 - `tick_fontsize` - Font size in pt. Default: `9`.
      - `textwidth`   - Textwidth of your LaTeX page in cm. Default: `17`.
 	 - `format`      - Must be supported by `print`. Default: `pdf`.
     
