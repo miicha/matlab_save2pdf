@@ -37,6 +37,10 @@ function [ ] = save2pdf( filename, varargin )
         error('Wrong number of arguments.');
     end
     
+	% turn off warnings:
+	warning('off', 'MATLAB:handle_graphics:exceptions:SceneNode')
+	warning('off', 'MATLAB:copyobj:ObjectNotCopied')
+	
     % set defaults:
     escape = true;
     texify = true;
@@ -138,4 +142,8 @@ function [ ] = save2pdf( filename, varargin )
     
     % clean up
     fig.delete();
+	
+	% turn on warnings:
+	warning('on', 'MATLAB:handle_graphics:exceptions:SceneNode')
+	warning('on', 'MATLAB:copyobj:ObjectNotCopied')
 end
