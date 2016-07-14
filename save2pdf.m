@@ -67,6 +67,7 @@ function [ ] = save2pdf( filename, varargin )
                 figwidth = varargin{i+1};
             case 'font'
                 fontsize = varargin{i+1};
+                tick_fontsize = fontsize-2;
             case 'text'
                 textwidth = varargin{i+1};
             case 'form'
@@ -107,16 +108,31 @@ function [ ] = save2pdf( filename, varargin )
         o = {'FontSize', fontsize};
         ticko = {'FontSize', tick_fontsize};
         legendo = {'FontSize', tick_fontsize};
-    end
-    
-    children = fig.Children;
-    for i = 1:length(children)
-        if isa(children(i), 'matlab.graphics.axis.Axes')           
-            set(get(children(i), 'XLabel'), o{:});
-            set(get(children(i), 'YLabel'), o{:});
-            set(get(children(i), 'ZLabel'), o{:});
+    end    
 
-            set(children(i), ticko{:});
+    children = fig.Children;
+    
+    tick_fontsize
+    
+    for i = 1:length(children)
+        if isa(children(i), 'matlab.graphics.axis.Axes')   
+                  
+            children(i).FontSize = tick_fontsize;
+            
+            
+            children(i).XLabel.FontSize = fontsize;
+            children(i).YLabel.FontSize = fontsize;
+            children(i).ZLabel.FontSize = fontsize;            
+            
+            if texify
+                children(i).XLabel.Interpreter = 'latex';
+                children(i).YLabel.Interpreter = 'latex';
+                children(i).ZLabel.Interpreter = 'latex';
+                children(i).TickLabelInterpreter = 'latex';
+            end
+
+            
+%             set(children(i), ticko{:});
             op = get(children(i), 'outerPosition');
             if op(2) < 0
                 ax(i) = children(i);
