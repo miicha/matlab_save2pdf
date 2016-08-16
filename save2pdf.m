@@ -112,13 +112,10 @@ function [ ] = save2pdf( filename, varargin )
 
     children = fig.Children;
     
-    tick_fontsize
     
     for i = 1:length(children)
         if isa(children(i), 'matlab.graphics.axis.Axes')   
-                  
             children(i).FontSize = tick_fontsize;
-            
             
             children(i).XLabel.FontSize = fontsize;
             children(i).YLabel.FontSize = fontsize;
@@ -131,18 +128,7 @@ function [ ] = save2pdf( filename, varargin )
                 children(i).TickLabelInterpreter = 'latex';
             end
 
-            
-%             set(children(i), ticko{:});
-            op = get(children(i), 'outerPosition');
-            if op(2) < 0
-                ax(i) = children(i);
-                op(2) = 0.01;
-            end
-            if op(4) > 1
-                ax(i) = children(i);
-                op(4) = 1;
-            end
-            set(children(i), 'outerPosition', op);
+            set(children(i), 'outerPosition', [0 0 1 1]);
         end
         if isa(children(i), 'matlab.graphics.illustration.Legend')
             set(children(i), legendo{:})
@@ -154,7 +140,7 @@ function [ ] = save2pdf( filename, varargin )
     end
     
     % save the file
-    print(fig, ['-d' format], '-r600', fullfile(pathstr, name))
+    print(fig, ['-d' format], '-r600', '-bestfit', fullfile(pathstr, name))
     
     % clean up
     fig.delete();
