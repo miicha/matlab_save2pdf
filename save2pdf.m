@@ -103,11 +103,11 @@ function [ ] = save2pdf( filename, varargin )
         legendo = {'FontSize', tick_fontsize};
     end    
 
-    children = fig.Children;    
+    children = fig.Children;
     for i = 1:length(children)
         if isa(children(i), 'matlab.graphics.axis.Axes')   
             children(i).FontSize = tick_fontsize;
-            
+            children(i).ActivePositionProperty = 'OuterPosition'; % Beschriftung nicht abschneiden
             children(i).XLabel.FontSize = fontsize;
             children(i).YLabel.FontSize = fontsize;
             children(i).ZLabel.FontSize = fontsize;
