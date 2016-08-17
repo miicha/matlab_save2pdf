@@ -4,7 +4,7 @@ function [ ] = save2pdf( filename, varargin )
     % save2pdf( filename, options )
     %
     % Saves a figure to a pdf in a nice size and with texed text.
-    % 
+    %
     % filename    - Path (absolute or relative to the current working dir).
     %
     % varargin:
@@ -27,13 +27,13 @@ function [ ] = save2pdf( filename, varargin )
     %
     % Author:    Sebastian Pfitzner
     %            pfitzseb [at] physik . hu - berlin . de
-       
+
     % check inputs
     if strcmp(filename, '')
         error('Please supply a filename.')
     end
     
-    if mod(length(varargin), 2) ~= 0 
+    if mod(length(varargin), 2) ~= 0
         error('Wrong number of arguments.');
     end
     
@@ -58,7 +58,7 @@ function [ ] = save2pdf( filename, varargin )
             case 'esca'
                 escape = varargin{i+1};
             case 'texi'
-                texify = varargin{i+1};        
+                texify = varargin{i+1};
             case 'figu'
                 fig = varargin{i+1};
             case 'aspe'
@@ -101,11 +101,11 @@ function [ ] = save2pdf( filename, varargin )
         legendo = {'interpreter', 'latex', 'FontSize', tick_fontsize};
     else
         legendo = {'FontSize', tick_fontsize};
-    end    
+    end
 
     children = fig.Children;
     for i = 1:length(children)
-        if isa(children(i), 'matlab.graphics.axis.Axes')   
+        if isa(children(i), 'matlab.graphics.axis.Axes')
             children(i).FontSize = tick_fontsize;
             children(i).ActivePositionProperty = 'OuterPosition'; % Beschriftung nicht abschneiden
             children(i).XLabel.FontSize = fontsize;
@@ -117,13 +117,13 @@ function [ ] = save2pdf( filename, varargin )
             end
             
             for j = 1:length(children(i).XAxis)
-                children(i).XAxis(j).Label.FontSize = fontsize;                
+                children(i).XAxis(j).Label.FontSize = fontsize;
                 if texify
                     children(i).XAxis(j).Label.Interpreter = 'latex';
                 end
             end
             for j = 1:length(children(i).YAxis)
-                children(i).YAxis(j).Label.FontSize = fontsize;                
+                children(i).YAxis(j).Label.FontSize = fontsize;
                 if texify
                     children(i).YAxis(j).Label.Interpreter = 'latex';
                 end
@@ -138,7 +138,7 @@ function [ ] = save2pdf( filename, varargin )
         end
         if isa(children(i), 'matlab.graphics.illustration.Legend')
             set(children(i), legendo{:})
-        end            
+        end
         if isa(children(i), 'matlab.graphics.illustration.ColorBar')
             set(children(i), 'TickLabelInterpreter', 'latex')
             set(children(i), 'FontSize', tick_fontsize)
