@@ -78,13 +78,13 @@ function [ ] = save2pdf( filename, varargin )
     end
     
     % copy figure before making any changes
-    n_fig = figure('visible', 'off');
-    % find all children of fig that are not menus and toolbars and stuff
-    cs = allchild(fig);
-    cs = cs(10:end);
-    
-    copyobj(cs, n_fig);
-    fig = n_fig;
+%     n_fig = figure('visible', 'off');
+%     % find all children of fig that are not menus and toolbars and stuff
+%     cs = allchild(fig);
+%     cs = cs(10:end);
+%     
+%     copyobj(cs, n_fig);
+%     fig = n_fig;
     
     [pathstr, name] = fileparts(filename);
     if escape
@@ -92,58 +92,49 @@ function [ ] = save2pdf( filename, varargin )
         name = regexprep(name, '~', '_');
     end
     
-    fig.Clipping = 'off';
-    
-    
     set(fig, 'PaperUnits', 'centimeters');
     set(fig, 'PaperSize', [textwidth, textwidth/aspectratio].*figwidth);
     set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth/aspectratio].*figwidth]);
-
-    fig.Units = 'centimeters';
-    fig.Position = [fig.Position(1:2) textwidth, textwidth/aspectratio].*figwidth;
     
     % Font options:
     if texify
-        o = {'interpreter', 'latex', 'FontSize', fontsize};
-        ticko = {'TickLabelInterpreter', 'latex', 'FontSize', tick_fontsize};
         legendo = {'interpreter', 'latex', 'FontSize', tick_fontsize};
     else
-        o = {'FontSize', fontsize};
-        ticko = {'FontSize', tick_fontsize};
         legendo = {'FontSize', tick_fontsize};
     end    
 
-    children = fig.Children;
-    
-%     set(gca, 'Position', get(gca, 'OuterPosition') - ...
-%     get(gca, 'TightInset') * [-1 0 1 0; 0 -1 0 1; 0 0 1 0; 0 0 0 1]);
-    
-
+    children = fig.Children;    
     for i = 1:length(children)
         if isa(children(i), 'matlab.graphics.axis.Axes')   
             children(i).FontSize = tick_fontsize;
             
             children(i).XLabel.FontSize = fontsize;
             children(i).YLabel.FontSize = fontsize;
-            children(i).ZLabel.FontSize = fontsize;            
+            children(i).ZLabel.FontSize = fontsize;
             
             if texify
-                children(i).XLabel.Interpreter = 'latex';
-                children(i).YLabel.Interpreter = 'latex';
-                children(i).ZLabel.Interpreter = 'latex';
                 children(i).TickLabelInterpreter = 'latex';
             end
-
-            Ti(i,:) = children(i).TightInset;
-            Li(i,:) = children(i).LooseInset;
-            children(i).Units = 'normalized';
-            pos(i,:) = children(i).Position;
             
+            for j = 1:length(children(i).XAxis)
+                children(i).XAxis(j).Label.FontSize = fontsize;                
+                if texify
+                    children(i).XAxis(j).Label.Interpreter = 'latex';
+                end
+            end
+            for j = 1:length(children(i).YAxis)
+                children(i).YAxis(j).Label.FontSize = fontsize;                
+                if texify
+                    children(i).YAxis(j).Label.Interpreter = 'latex';
+                end
+            end
+            for j = 1:length(children(i).XAxis)
+                children(i).ZAxis(j).Label.FontSize = fontsize;
+                if texify
+                    children(i).ZAxis(j).Label.Interpreter = 'latex';
+                end
+            end
             
-            out3 = 1-(max(Ti(:,3))*pos(1,3));
-            out3 = max(pos(:,3))+min(pos(:,1));
-            set(children(i), 'outerPosition', [min(Ti(:,1)) 0 out3 1]);
-%             [children(i).Position; children(i).TightInset];
         end
         if isa(children(i), 'matlab.graphics.illustration.Legend')
             set(children(i), legendo{:})
@@ -158,7 +149,7 @@ function [ ] = save2pdf( filename, varargin )
     print(fig, ['-d' format], '-r600', fullfile(pathstr, name))
     
     % clean up
-    fig.delete();
+%     fig.delete();
 	
 	% turn on warnings:
 	warning('on', 'MATLAB:handle_graphics:exceptions:SceneNode')
