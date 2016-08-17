@@ -92,6 +92,9 @@ function [ ] = save2pdf( filename, varargin )
         name = regexprep(name, '~', '_');
     end
     
+    fig.Clipping = 'off';
+    
+    
     set(fig, 'PaperUnits', 'centimeters');
     set(fig, 'PaperSize', [textwidth, textwidth/aspectratio].*figwidth);
     set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth/aspectratio].*figwidth]);
@@ -112,7 +115,10 @@ function [ ] = save2pdf( filename, varargin )
 
     children = fig.Children;
     
+%     set(gca, 'Position', get(gca, 'OuterPosition') - ...
+%     get(gca, 'TightInset') * [-1 0 1 0; 0 -1 0 1; 0 0 1 0; 0 0 0 1]);
     
+
     for i = 1:length(children)
         if isa(children(i), 'matlab.graphics.axis.Axes')   
             children(i).FontSize = tick_fontsize;
@@ -128,7 +134,16 @@ function [ ] = save2pdf( filename, varargin )
                 children(i).TickLabelInterpreter = 'latex';
             end
 
-            set(children(i), 'outerPosition', [0 0 1 1]);
+            Ti(i,:) = children(i).TightInset;
+            Li(i,:) = children(i).LooseInset;
+            children(i).Units = 'normalized';
+            pos(i,:) = children(i).Position;
+            
+            
+            out3 = 1-(max(Ti(:,3))*pos(1,3));
+            out3 = max(pos(:,3))+min(pos(:,1));
+            set(children(i), 'outerPosition', [min(Ti(:,1)) 0 out3 1]);
+%             [children(i).Position; children(i).TightInset];
         end
         if isa(children(i), 'matlab.graphics.illustration.Legend')
             set(children(i), legendo{:})
@@ -140,7 +155,7 @@ function [ ] = save2pdf( filename, varargin )
     end
     
     % save the file
-    print(fig, ['-d' format], '-r600', '-bestfit', fullfile(pathstr, name))
+    print(fig, ['-d' format], '-r600', fullfile(pathstr, name))
     
     % clean up
     fig.delete();
