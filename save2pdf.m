@@ -140,7 +140,9 @@ function [ ] = save2pdf( filename, varargin )
             set(children(i), legendo{:})
         end
         if isa(children(i), 'matlab.graphics.illustration.ColorBar')
-            set(children(i), 'TickLabelInterpreter', 'latex')
+            if texify
+                set(children(i), 'TickLabelInterpreter', 'latex')
+            end
             set(children(i), 'FontSize', tick_fontsize)
         end
     end
