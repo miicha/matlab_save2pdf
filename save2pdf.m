@@ -51,6 +51,7 @@ function [ ] = save2pdf( filename, varargin )
     tick_fontsize = fontsize-2; % pt
     textwidth = 17; % cm
     format = 'pdf';
+    keepAscpect = false;
     
     % user-supplied options:
     for i = 1:2:length(varargin)
@@ -74,6 +75,8 @@ function [ ] = save2pdf( filename, varargin )
                 format = varargin{i+1};
             case 'tick'
                 tick_fontsize = varargin{i+1};
+            case 'keep'
+                keepAscpect = varargin{i+1};
         end
     end
     
@@ -119,12 +122,14 @@ function [ ] = save2pdf( filename, varargin )
             for j = 1:length(children(i).XAxis)
                 children(i).XAxis(j).Label.FontSize = fontsize;
                 if texify
+                    children(i).XAxis(j).Label.String = strrep(children(i).XAxis(j).Label.String, '\mu','$$\mu$$');
                     children(i).XAxis(j).Label.Interpreter = 'latex';
                 end
             end
             for j = 1:length(children(i).YAxis)
                 children(i).YAxis(j).Label.FontSize = fontsize;
                 if texify
+                    children(i).YAxis(j).Label.String = strrep(children(i).YAxis(j).Label.String, '#','$$\#$$');
                     children(i).YAxis(j).Label.Interpreter = 'latex';
                 end
             end
@@ -133,6 +138,20 @@ function [ ] = save2pdf( filename, varargin )
                 if texify
                     children(i).ZAxis(j).Label.Interpreter = 'latex';
                 end
+            end
+            
+            if keepAscpect
+                ax = children(i);
+                outerpos = ax.OuterPosition;
+                ti = ax.TightInset;
+                left = outerpos(1) + ti(1);%left = 0;
+                bottom = outerpos(2) + ti(2);
+                ax_width = outerpos(3) - ti(1) - ti(3);
+                ax_height = outerpos(4) - ti(2) - ti(4);
+                ax.Position = [left bottom ax_width ax_height];
+
+                pos = children(i).Position;
+                aspectratio = 1/((pos(4)-pos(2))/(pos(3)-pos(1)));                
             end
             
         end
@@ -147,8 +166,11 @@ function [ ] = save2pdf( filename, varargin )
         end
     end
     
+    set(fig, 'PaperSize', [textwidth, textwidth/aspectratio].*figwidth);
+    set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth/aspectratio].*figwidth]);
+
     % save the file
-    print(fig, ['-d' format], '-r600', fullfile(pathstr, name))
+    print(fig, ['-d' format], '-r600', fullfile(pathstr, [name '.' format]))
     
     % clean up
 %     fig.delete();
