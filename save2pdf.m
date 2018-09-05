@@ -10,10 +10,10 @@ function [ ] = save2pdf( filename, varargin )
     % varargin:
     %   width       - Adjusts font sizes so that they are readable with
     %                 different figure widths for a4paper. Default: 0.8*\textwidth.
-    %   aspectratio - Aspect ratio. Defaults to height/width = 3/5.
+    %   aspectratio - Aspect ratio. Defaults to width/height = 5/3.
     %   figure     - Figure to save. Default: Current figure.
     %   texify      - Texify the labels and legends. Default: true.
-    %   escape      - escapes ' ' and '~', which cannot be parsed by LaTeX.
+    %   escape      - escapes ' ' and '~' in file name, which cannot be parsed by LaTeX.
     %                 Default: true.
     %   fontsize    - Font size in pt. Default: 11.
     %   tick_fontsize - Font size in pt. Default: 9.
