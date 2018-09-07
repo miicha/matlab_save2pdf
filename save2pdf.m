@@ -139,21 +139,6 @@ function [ ] = save2pdf( filename, varargin )
                     children(i).ZAxis(j).Label.Interpreter = 'latex';
                 end
             end
-            
-            if keepAscpect
-                ax = children(i);
-                outerpos = ax.OuterPosition;
-                ti = ax.TightInset;
-                left = outerpos(1) + ti(1);%left = 0;
-                bottom = outerpos(2) + ti(2);
-                ax_width = outerpos(3) - ti(1) - ti(3);
-                ax_height = outerpos(4) - ti(2) - ti(4);
-                ax.Position = [left bottom ax_width ax_height];
-
-                pos = children(i).Position;
-                aspectratio = 1/((pos(4)-pos(2))/(pos(3)-pos(1)));                
-            end
-            
         end
         if isa(children(i), 'matlab.graphics.illustration.Legend')
             set(children(i), legendo{:})
@@ -166,8 +151,38 @@ function [ ] = save2pdf( filename, varargin )
         end
     end
     
-    set(fig, 'PaperSize', [textwidth, textwidth/aspectratio].*figwidth);
-    set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth/aspectratio].*figwidth]);
+    if keepAscpect
+        for i = 1:length(children)
+            if isa(children(i), 'matlab.graphics.axis.Axes')
+                ax = children(i);
+                ax.Units = 'centimeter';
+                fig.Units = 'centimeter';
+                
+                pos = ax.Position;
+                axratio = pos(4)/pos(3);
+                
+                ti = ax.TightInset;
+%                 ax.LooseInset= ti;
+                
+                left = ti(1);
+                bottom = ti(2);
+                figureWidth = textwidth*figwidth; % in cm
+                ax_width = figureWidth - ti(1) - ti(3); % in cm
+                figureHeight = ax_width*axratio + ti(2) + ti(4); % in cm
+                ax_height = ax_width*axratio; % in cm
+
+                ax.Position = [left bottom ax_width ax_height];
+                
+                figdim = [figureWidth figureHeight];
+
+                fig.PaperSize =  figdim;
+                fig.PaperPosition= [0, 0, figdim];
+                fig.InnerPosition= [0, 0, figdim];
+            end
+            
+        end
+    end
+    
 
     % save the file
     print(fig, ['-d' format], '-r600', fullfile(pathstr, [name '.' format]))
