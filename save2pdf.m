@@ -52,6 +52,7 @@ function [ ] = save2pdf( filename, varargin )
     textwidth = 17; % cm
     format = 'pdf';
     keepAscpect = false;
+    remClipping = false;
     
     % user-supplied options:
     for i = 1:2:length(varargin)
@@ -77,6 +78,8 @@ function [ ] = save2pdf( filename, varargin )
                 tick_fontsize = varargin{i+1};
             case 'keep'
                 keepAscpect = varargin{i+1};
+            case 'remo'
+                remClipping = varargin{i+1};
         end
     end
     
@@ -161,12 +164,13 @@ function [ ] = save2pdf( filename, varargin )
             if isa(children(i), 'matlab.graphics.axis.Axes')
                 ax = children(i);
                 ax.Units = 'centimeter';
-                
+%                 ax.SortMethod
+%                 ax.SortMethod = 'childorder';
                 pos = ax.Position;
                 axratio = pos(4)/pos(3);
                 
                 ti = ax.TightInset;
-%                 ax.LooseInset= ti;
+                ax.LooseInset= ti;
                 
                 left = ti(1);
                 bottom = ti(2);
@@ -189,7 +193,15 @@ function [ ] = save2pdf( filename, varargin )
     
 
     % save the file
-    print(fig, ['-d' format], '-r600', fullfile(pathstr, [name '.' format]))
+    
+    filenamepath = fullfile(pathstr, [name '.' format]);
+    print(fig, ['-d' format], '-r600','-painters', filenamepath)
+    
+    if remClipping
+        scriptfile = fullfile(fileparts(mfilename('fullpath')), 'remClipping.vbs');
+        commandstring = sprintf('cscript //NoLogo %s "%s"', scriptfile,filenamepath);
+        [clipRemove_status,message] = dos(commandstring)
+    end
     
     % clean up
 %     fig.delete();
