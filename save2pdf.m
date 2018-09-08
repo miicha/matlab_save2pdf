@@ -96,6 +96,7 @@ function [ ] = save2pdf( filename, varargin )
     end
     
     set(fig, 'PaperUnits', 'centimeters');
+    fig.Units = 'centimeter';
     set(fig, 'PaperSize', [textwidth, textwidth/aspectratio].*figwidth);
     set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth/aspectratio].*figwidth]);
     
@@ -122,15 +123,19 @@ function [ ] = save2pdf( filename, varargin )
             for j = 1:length(children(i).XAxis)
                 children(i).XAxis(j).Label.FontSize = fontsize;
                 if texify
-                    children(i).XAxis(j).Label.String = strrep(children(i).XAxis(j).Label.String, '\mu','$$\mu$$');
-                    children(i).XAxis(j).Label.Interpreter = 'latex';
+                    if ~strcmp(children(i).XAxis(j).Label.Interpreter,'latex')
+                        children(i).XAxis(j).Label.String = strrep(children(i).XAxis(j).Label.String, '\mu','$$\mu$$');
+                        children(i).XAxis(j).Label.Interpreter = 'latex';
+                    end
                 end
             end
             for j = 1:length(children(i).YAxis)
                 children(i).YAxis(j).Label.FontSize = fontsize;
                 if texify
-                    children(i).YAxis(j).Label.String = strrep(children(i).YAxis(j).Label.String, '#','$$\#$$');
-                    children(i).YAxis(j).Label.Interpreter = 'latex';
+                    if ~strcmp(children(i).YAxis(j).Label.Interpreter,'latex')
+                        children(i).YAxis(j).Label.String = strrep(children(i).YAxis(j).Label.String, '#','$$\#$$');
+                        children(i).YAxis(j).Label.Interpreter = 'latex';
+                    end
                 end
             end
             for j = 1:length(children(i).XAxis)
@@ -156,7 +161,6 @@ function [ ] = save2pdf( filename, varargin )
             if isa(children(i), 'matlab.graphics.axis.Axes')
                 ax = children(i);
                 ax.Units = 'centimeter';
-                fig.Units = 'centimeter';
                 
                 pos = ax.Position;
                 axratio = pos(4)/pos(3);
