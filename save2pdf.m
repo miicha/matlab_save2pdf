@@ -1,4 +1,4 @@
-function [ ] = save2pdf( filename, varargin )
+function [figdim] = save2pdf( filename, varargin )
     %SAVE2PDF: Saves figure to pdf.
     %
     % save2pdf( filename, options )
@@ -53,6 +53,7 @@ function [ ] = save2pdf( filename, varargin )
     format = 'pdf';
     keepAscpect = false;
     remClipping = false;
+    figdim =[];
     
     % user-supplied options:
     for i = 1:2:length(varargin)
@@ -80,6 +81,8 @@ function [ ] = save2pdf( filename, varargin )
                 keepAscpect = varargin{i+1};
             case 'remo'
                 remClipping = varargin{i+1};
+            case 'fixs'
+                figdim = varargin{i+1};
         end
     end
     
@@ -100,8 +103,17 @@ function [ ] = save2pdf( filename, varargin )
     
     set(fig, 'PaperUnits', 'centimeters');
     fig.Units = 'centimeter';
-    set(fig, 'PaperSize', [textwidth, textwidth/aspectratio].*figwidth);
-    set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth/aspectratio].*figwidth]);
+    
+    if isempty(figdim)
+        figdim = [textwidth, textwidth/aspectratio].*figwidth;
+    end
+    
+%     fig.PaperSize =  figdim;
+%     fig.PaperPosition= [0, 0, figdim];
+%     fig.InnerPosition= [0, 0, figdim];
+    
+%     set(fig, 'PaperSize', figdim);
+%     set(fig, 'PaperPosition', [0, 0, [textwidth, textwidth/aspectratio].*figwidth]);
     
     % Font options:
     if texify
@@ -111,14 +123,10 @@ function [ ] = save2pdf( filename, varargin )
     end
 
     children = fig.Children;
+    numchild = 0;
     for i = 1:length(children)
         if isa(children(i), 'matlab.graphics.axis.Axes')
-            children(i).FontSize = tick_fontsize;
-            children(i).ActivePositionProperty = 'OuterPosition'; % Beschriftung nicht abschneiden
-            children(i).XLabel.FontSize = fontsize;
-            children(i).YLabel.FontSize = fontsize;
-            children(i).ZLabel.FontSize = fontsize;
-            
+            numchild = numchild+1;
             if texify
                 children(i).TickLabelInterpreter = 'latex';
             end
@@ -148,6 +156,7 @@ function [ ] = save2pdf( filename, varargin )
                 end
             end
         end
+        
         if isa(children(i), 'matlab.graphics.illustration.Legend')
             set(children(i), legendo{:})
         end
@@ -159,37 +168,47 @@ function [ ] = save2pdf( filename, varargin )
         end
     end
     
-    if keepAscpect
-        for i = 1:length(children)
-            if isa(children(i), 'matlab.graphics.axis.Axes')
-                ax = children(i);
-                ax.Units = 'centimeter';
-%                 ax.SortMethod
-%                 ax.SortMethod = 'childorder';
-                pos = ax.Position;
-                axratio = pos(4)/pos(3);
-                
+    for i = 1:length(children)
+        if isa(children(i), 'matlab.graphics.axis.Axes')
+            ax = children(i);
+            
+            children(i).FontSize = tick_fontsize;
+            children(i).ActivePositionProperty = 'OuterPosition'; % Beschriftung nicht abschneiden
+            children(i).XLabel.FontSize = fontsize;
+            children(i).YLabel.FontSize = fontsize;
+            children(i).ZLabel.FontSize = fontsize;
+            
+            if numchild ==1            
+                if keepAscpect
+                            ax = children(i);
+                            ax.Units = 'centimeter';
+                            pos = ax.Position;
+                            axratio = pos(4)/pos(3);
+
+                            ti = ax.TightInset;
+
+                            left = ti(1);
+                            bottom = ti(2);
+                            figureWidth = textwidth*figwidth; % in cm
+                            ax_width = figureWidth - ti(1) - ti(3); % in cm
+                            figureHeight = ax_width*axratio + ti(2) + ti(4); % in cm
+                            ax_height = ax_width*axratio; % in cm
+
+                            ax.Position = [left bottom ax_width ax_height];
+
+                            figdim = [figureWidth figureHeight];
+                end
                 ti = ax.TightInset;
                 ax.LooseInset= ti;
-                
-                left = ti(1);
-                bottom = ti(2);
-                figureWidth = textwidth*figwidth; % in cm
-                ax_width = figureWidth - ti(1) - ti(3); % in cm
-                figureHeight = ax_width*axratio + ti(2) + ti(4); % in cm
-                ax_height = ax_width*axratio; % in cm
-
-                ax.Position = [left bottom ax_width ax_height];
-                
-                figdim = [figureWidth figureHeight];
-
-                fig.PaperSize =  figdim;
-                fig.PaperPosition= [0, 0, figdim];
-                fig.InnerPosition= [0, 0, figdim];
             end
-            
         end
     end
+    
+    
+    
+    fig.PaperSize =  figdim;
+    fig.PaperPosition= [0, 0, figdim];
+    fig.InnerPosition= [0, 0, figdim];
     
 
     % save the file
