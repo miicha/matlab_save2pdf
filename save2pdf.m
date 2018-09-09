@@ -54,6 +54,7 @@ function [figdim] = save2pdf( filename, varargin )
     keepAscpect = false;
     remClipping = false;
     figdim =[];
+    tight = false;
     
     % user-supplied options:
     for i = 1:2:length(varargin)
@@ -83,6 +84,8 @@ function [figdim] = save2pdf( filename, varargin )
                 remClipping = varargin{i+1};
             case 'fixs'
                 figdim = varargin{i+1};
+            case 'tigh'
+                tight = varargin{i+1};
         end
     end
     
@@ -121,6 +124,9 @@ function [figdim] = save2pdf( filename, varargin )
     else
         legendo = {'FontSize', tick_fontsize};
     end
+    
+    fig.PaperSize =  figdim;
+    fig.PaperPosition= [0, 0, figdim];
 
     children = fig.Children;
     numchild = 0;
@@ -178,7 +184,8 @@ function [figdim] = save2pdf( filename, varargin )
             children(i).YLabel.FontSize = fontsize;
             children(i).ZLabel.FontSize = fontsize;
             
-            if numchild ==1            
+            if numchild ==1 && tight
+%                 fig.Resize = 'on';
                 if keepAscpect
                             ax = children(i);
                             ax.Units = 'centimeter';
@@ -208,7 +215,10 @@ function [figdim] = save2pdf( filename, varargin )
     
     fig.PaperSize =  figdim;
     fig.PaperPosition= [0, 0, figdim];
-    fig.InnerPosition= [0, 0, figdim];
+    
+    if numchild == 1 && tight
+        fig.InnerPosition= [0, 0, figdim];
+    end
     
 
     % save the file
