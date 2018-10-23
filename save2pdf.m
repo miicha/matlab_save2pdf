@@ -18,6 +18,7 @@ function [figdim] = save2pdf( filename, varargin )
     %   fontsize    - Font size in pt. Default: 11.
     %   tick_fontsize - Font size in pt. Default: 9.
     %   textwidth   - Textwidth of your LaTeX page in cm. Default: 17.
+    %   markersize  - to resize the markers input the desired size
     %   format      - Must be supported by `print`. Default: 'pdf'.
     %
     % Example:   plot(1:10);
@@ -55,6 +56,7 @@ function [figdim] = save2pdf( filename, varargin )
     remClipping = false;
     figdim =[];
     tight = false;
+    resizemarkers = false;
     
     % user-supplied options:
     for i = 1:2:length(varargin)
@@ -84,6 +86,9 @@ function [figdim] = save2pdf( filename, varargin )
                 remClipping = varargin{i+1};
             case 'fixs'
                 figdim = varargin{i+1};
+            case 'mark'
+                resizemarkers = true;
+                markersize = varargin{i+1};
             case 'tigh'
                 tight = varargin{i+1};
         end
@@ -132,6 +137,15 @@ function [figdim] = save2pdf( filename, varargin )
     numchild = 0;
     for i = 1:length(children)
         if isa(children(i), 'matlab.graphics.axis.Axes')
+            if resizemarkers
+                axeschildren = children(i).Children;
+                for j = 1:length(axeschildren)
+                    switch class(axeschildren(j))
+                        case 'matlab.graphics.chart.primitive.Scatter'
+                            axeschildren(j).SizeData = markersize;
+                    end
+                end
+            end
             numchild = numchild+1;
             if texify
                 children(i).TickLabelInterpreter = 'latex';
@@ -141,7 +155,9 @@ function [figdim] = save2pdf( filename, varargin )
                 children(i).XAxis(j).Label.FontSize = fontsize;
                 if texify
                     if ~strcmp(children(i).XAxis(j).Label.Interpreter,'latex')
-                        children(i).XAxis(j).Label.String = strrep(children(i).XAxis(j).Label.String, '\mu','$$\mu$$');
+                        
+                        children(i).XAxis(j).Label.String = regexprep(children(i).XAxis(j).Label.String, '(\\\w+_?\\?\w*)','\$\$$1\$\$');
+                        children(i).XAxis(j).Label.String = strrep(children(i).XAxis(j).Label.String, '\mus','\mu s');
                         children(i).XAxis(j).Label.Interpreter = 'latex';
                     end
                 end
@@ -151,7 +167,20 @@ function [figdim] = save2pdf( filename, varargin )
                 if texify
                     if ~strcmp(children(i).YAxis(j).Label.Interpreter,'latex')
                         children(i).YAxis(j).Label.String = strrep(children(i).YAxis(j).Label.String, '#','$$\#$$');
+                        children(i).YAxis(j).Label.String = regexprep(children(i).YAxis(j).Label.String, '(\\\w+\^?_?\\?\w*)','\$\$$1\$\$');
+                        children(i).YAxis(j).Label.String = strrep(children(i).YAxis(j).Label.String, '\mus','\mu s');
                         children(i).YAxis(j).Label.Interpreter = 'latex';
+                    end
+                end
+            end
+            for j = 1:length(children(i).ZAxis)
+                children(i).ZAxis(j).Label.FontSize = fontsize;
+                if texify
+                    if ~strcmp(children(i).ZAxis(j).Label.Interpreter,'latex')
+                        
+                        children(i).ZAxis(j).Label.String = regexprep(children(i).ZAxis(j).Label.String, '(\\\w+_?\\?\w*)','\$\$$1\$\$');
+                        children(i).ZAxis(j).Label.String = strrep(children(i).ZAxis(j).Label.String, '\mus','\mu s');
+                        children(i).ZAxis(j).Label.Interpreter = 'latex';
                     end
                 end
             end
