@@ -193,6 +193,14 @@ function [figdim] = save2pdf( filename, varargin )
         end
         
         if isa(children(i), 'matlab.graphics.illustration.Legend')
+            if texify
+                if ~strcmp(children(i).Interpreter,'latex')
+                    for j = 1:length(children(i).String)
+                        children(i).String{j} = regexprep(children(i).String{j}, '(\\\w+_?\\?\w*)','\$\$$1\$\$');
+                        children(i).String{j} = strrep(children(i).String{j}, '\mus','\mu s');
+                    end
+                end
+            end
             set(children(i), legendo{:})
         end
         if isa(children(i), 'matlab.graphics.illustration.ColorBar')
