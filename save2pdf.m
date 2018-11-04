@@ -30,6 +30,11 @@ function [figdim] = save2pdf( filename, varargin )
     %            pfitzseb [at] physik . hu - berlin . de
 
     % check inputs
+    
+    if isstring(filename)
+        filename = cellstr(filename);
+        filename = filename{1};
+    end
     if strcmp(filename, '')
         error('Please supply a filename.')
     end
