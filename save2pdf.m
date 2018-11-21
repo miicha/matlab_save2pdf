@@ -55,6 +55,7 @@ function [figdim] = save2pdf( filename, varargin )
     figwidth = 0.8; % *textwidth
     fontsize = 11; % pt
     tick_fontsize = fontsize-2; % pt
+    legend_fontsize = tick_fontsize;
     textwidth = 17; % cm
     format = 'pdf';
     keepAscpect = false;
@@ -62,7 +63,9 @@ function [figdim] = save2pdf( filename, varargin )
     figdim =[];
     tight = false;
     resizemarkers = false;
-    
+    markerPos = [];
+    tokenSize = [30,18];
+    length(varargin)
     % user-supplied options:
     for i = 1:2:length(varargin)
         switch lower(varargin{i}(1:4))
@@ -96,6 +99,12 @@ function [figdim] = save2pdf( filename, varargin )
                 markersize = varargin{i+1};
             case 'tigh'
                 tight = varargin{i+1};
+            case 'toke'
+                tokenSize = varargin{i+1};
+            case 'mpos'
+                markerPos = varargin{i+1};
+            case 'lege'
+                legend_fontsize = varargin{i+1};
         end
     end
     
@@ -130,9 +139,9 @@ function [figdim] = save2pdf( filename, varargin )
     
     % Font options:
     if texify
-        legendo = {'interpreter', 'latex', 'FontSize', tick_fontsize};
+        legendo = {'interpreter', 'latex', 'FontSize', legend_fontsize};
     else
-        legendo = {'FontSize', tick_fontsize};
+        legendo = {'FontSize', legend_fontsize};
     end
     
     fig.PaperSize =  figdim;
@@ -207,6 +216,7 @@ function [figdim] = save2pdf( filename, varargin )
                 end
             end
             set(children(i), legendo{:})
+            hLeg = children(i);
         end
         if isa(children(i), 'matlab.graphics.illustration.ColorBar')
             if texify
@@ -264,6 +274,9 @@ function [figdim] = save2pdf( filename, varargin )
     
 
     % save the file
+    if exist('hLeg','var')
+        squeeze_legend(hLeg,tokenSize,markerPos);
+    end
     
     filenamepath = fullfile(pathstr, [name '.' format]);
     print(fig, ['-d' format], '-r600','-painters', filenamepath)
@@ -280,4 +293,17 @@ function [figdim] = save2pdf( filename, varargin )
 	% turn on warnings:
 	warning('on', 'MATLAB:handle_graphics:exceptions:SceneNode')
 	warning('on', 'MATLAB:copyobj:ObjectNotCopied')
+end
+
+function squeeze_legend(hLeg,tokenSize,markerPos)
+
+if ~isempty(markerPos)
+    for i = 1:length(hLeg.EntryContainer.Children)
+        drawnow
+        hLegendEntry = hLeg.EntryContainer.Children(i);
+        hLegendIconLine = hLegendEntry.Icon.Transform.Children.Children;
+        hLegendIconLine.VertexData(1) = markerPos;
+    end
+end
+hLeg.ItemTokenSize = tokenSize;
 end
