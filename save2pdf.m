@@ -66,6 +66,9 @@ function [figdim] = save2pdf( filename, varargin )
     markerPos = [];
     tokenSize = [30,18];
     length(varargin)
+    legend_fontsize_set = false;
+    tick_fontsize_set = false;
+    
     % user-supplied options:
     for i = 1:2:length(varargin)
         switch lower(varargin{i}(1:4))
@@ -81,13 +84,19 @@ function [figdim] = save2pdf( filename, varargin )
                 figwidth = varargin{i+1};
             case 'font'
                 fontsize = varargin{i+1};
-                tick_fontsize = fontsize-2;
+                if ~tick_fontsize_set 
+                    tick_fontsize = fontsize-2;
+                end
+                if ~legend_fontsize_set             
+                    legend_fontsize = fontsize-2;
+                end
             case 'text'
                 textwidth = varargin{i+1};
             case 'form'
                 format = varargin{i+1};
             case 'tick'
                 tick_fontsize = varargin{i+1};
+                tick_fontsize_set = true;
             case 'keep'
                 keepAscpect = varargin{i+1};
             case 'remo'
@@ -105,6 +114,7 @@ function [figdim] = save2pdf( filename, varargin )
                 markerPos = varargin{i+1};
             case 'lege'
                 legend_fontsize = varargin{i+1};
+                legend_fontsize_set = true;
         end
     end
     
