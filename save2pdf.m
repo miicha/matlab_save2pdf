@@ -1,4 +1,4 @@
-function [figdim] = save2pdf( filename, varargin )
+function [fig_dim_out] = save2pdf( filename, varargin )
     %SAVE2PDF: Saves figure to pdf.
     %
     % save2pdf( filename, options )
@@ -296,7 +296,9 @@ function [figdim] = save2pdf( filename, varargin )
         commandstring = sprintf('cscript //NoLogo %s "%s"', scriptfile,filenamepath);
         [clipRemove_status,message] = dos(commandstring)
     end
-    
+    if nargout == 1
+        fig_dim_out = figdim;
+    end
     % clean up
 %     fig.delete();
 	
