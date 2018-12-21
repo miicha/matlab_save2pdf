@@ -235,7 +235,7 @@ function [fig_dim_out] = save2pdf( filename, varargin )
             set(children(i), 'FontSize', tick_fontsize)
         end
     end
-    
+    drawnow
     for i = 1:length(children)
         if isa(children(i), 'matlab.graphics.axis.Axes')
             ax = children(i);
