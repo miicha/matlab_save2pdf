@@ -65,7 +65,6 @@ function [fig_dim_out] = save2pdf( filename, varargin )
     resizemarkers = false;
     markerPos = [];
     tokenSize = [30,18];
-    length(varargin)
     legend_fontsize_set = false;
     tick_fontsize_set = false;
     
