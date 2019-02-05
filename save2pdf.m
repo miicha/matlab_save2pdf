@@ -239,9 +239,10 @@ function [fig_dim_out] = save2pdf( filename, varargin )
     for i = 1:length(children)
         if isa(children(i), 'matlab.graphics.axis.Axes')
             ax = children(i);
-            
             children(i).FontSize = tick_fontsize;
-            children(i).ActivePositionProperty = 'OuterPosition'; % Beschriftung nicht abschneiden
+            if length(ax.Tag)<10 || ~strcmpi(ax.Tag(1:10),'PlotMatrix')
+                children(i).ActivePositionProperty = 'OuterPosition'; % Beschriftung nicht abschneiden
+            end
             children(i).XLabel.FontSize = fontsize;
             children(i).YLabel.FontSize = fontsize;
             children(i).ZLabel.FontSize = fontsize;
@@ -273,8 +274,16 @@ function [fig_dim_out] = save2pdf( filename, varargin )
         end
     end
     
+    % change text in TextBoxes
+    h = findobj(fig, 'Type', 'TextBox');
+    for i = 1:length(h)
+        h(i).FontSize = tick_fontsize;
+        if texify
+           h(i).Interpreter = 'latex';
+        end
+    end
     
-    
+    % set paper size and position
     fig.PaperSize =  figdim;
     fig.PaperPosition= [0, 0, figdim];
     
