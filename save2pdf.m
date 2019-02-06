@@ -299,7 +299,7 @@ function [fig_dim_out] = save2pdf( filename, varargin )
     filenamepath = fullfile(pathstr, [name '.' format]);
     print(fig, ['-d' format], '-r600','-painters', filenamepath)
     
-    if remClipping
+    if remClipping && verLessThan('matlab', '9.5')
         scriptfile = fullfile(fileparts(mfilename('fullpath')), 'remClipping.vbs');
         commandstring = sprintf('cscript //NoLogo %s "%s"', scriptfile,filenamepath);
         [clipRemove_status,message] = dos(commandstring)
