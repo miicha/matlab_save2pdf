@@ -20,6 +20,13 @@ function [fig_dim_out] = save2pdf( filename, varargin )
     %   textwidth   - Textwidth of your LaTeX page in cm. Default: 17.
     %   markersize  - to resize the markers input the desired size
     %   format      - Must be supported by `print`. Default: 'pdf'.
+	%
+	%   markersize		- change marker size of plot (useful for e.g. scatter plots).
+	%   tight           - try to make whithe space around figure extra tight (sometimes problematic)
+	%   removeClipping  - workaround for diagonal lines in area plots (e.g. `surf`), needs working illustrator installation
+	%   keepAscpect     - try to keep aspect ratio of figure (overwrites given `aspectratio`) only works with single axis in figure
+	%   fixSize         - set desired paper size (in cm)
+	%   legendFontSize  - set legend font size. Defaults to fontsize-2 (9)
     %
     % Example:   plot(1:10);
     %            xlabel('bla');
@@ -28,6 +35,8 @@ function [fig_dim_out] = save2pdf( filename, varargin )
     %
     % Author:    Sebastian Pfitzner
     %            pfitzseb [at] physik . hu - berlin . de
+	%            Michael Pfitzner
+	%            michael.pfitzner [at] physik . hu - berlin . de
 
     % check inputs
     
@@ -46,6 +55,14 @@ function [fig_dim_out] = save2pdf( filename, varargin )
 	% turn off warnings:
 	warning('off', 'MATLAB:handle_graphics:exceptions:SceneNode')
 	warning('off', 'MATLAB:copyobj:ObjectNotCopied')
+	
+	% ToDo: use Matlab inputParser e.g.
+	%
+	% parseObj = inputParser;
+	% parseObj.addRequired('X',@XCheck);
+	% parseObj.addParameter('type','Pearson',@typeCheck);
+	% parseObj.parse(args{:});
+	% X = parseObj.Results.X;
 	
     % set defaults:
     escape = true;
